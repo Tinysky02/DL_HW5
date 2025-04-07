@@ -109,9 +109,12 @@ class CausalSelfAttention(nn.Module):
             # Hint: The maximum sequence length is given by config.block_size.
 
             ### YOUR CODE HERE ###
-            self.rope_cache = precompute_rotary_emb(
-                dim=(config.n_embd // config.n_head), 
-                max_positions=config.block_size
+            self.register_buffer(
+                "rope_cache",
+                precompute_rotary_emb(
+                    dim = config.n_embd // config.n_head,
+                    max_positions = config.block_size
+                )
             )
             ### END YOUR CODE ###
 
