@@ -104,7 +104,23 @@ def main():
         # writer=writer
 
         ### YOUR CODE HERE ###
-        pass
+        tconf = trainer.TrainerConfig(
+            max_epochs     = 650,
+            batch_size     = 128,
+            learning_rate  = args.pretrain_lr,
+            lr_decay       = True,
+            warmup_tokens  = 512 * 20,
+            final_tokens   = 650 * len(pretrain_dataset) * block_size,
+            writer         = writer
+        )
+        pretrain_trainer = trainer.Trainer(
+            model,
+            pretrain_dataset,
+            None,       
+            tconf
+        )
+        pretrain_trainer.train()
+        torch.save(model.state_dict(), args.writing_params_path)
         ### END YOUR CODE ###
     elif args.function == 'finetune':
         assert args.writing_params_path is not None
@@ -166,7 +182,6 @@ def main():
 
         finetune_trainer = trainer.Trainer(model, finetune_dataset, None, tconf)
         finetune_trainer.train()
-        print(f"Saving finetuned model to {args.writing_params_path}")
         torch.save(model.state_dict(), args.writing_params_path)
 
         ### END YOUR CODE ###
