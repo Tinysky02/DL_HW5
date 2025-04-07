@@ -101,8 +101,36 @@ class CharCorruptionDataset(Dataset):
     def __getitem__(self, idx):
         # TODO [part e]: see spec above
         ### YOUR CODE HERE ###
-        pass
+        doc = self.data[idx].encode('utf-8').decode('ascii', errors='ignore')
+        min_len = 4
+        max_len = int(self.block_size * 7 / 8)
+        if len(doc) < min_len:
+            doc = doc + " " * (min_len - len(doc))
+        trunc_len = random.randint(min_len, min(max_len, len(doc)))
+        doc = doc[:trunc_len]
+        max_mask_len = max(1, trunc_len // 2)
+        mask_len = random.randint(1, max_mask_len)
+        start = random.randint(0, trunc_len - mask_len)
+        prefix = doc[:start]
+        masked_content = doc[start:start + mask_len]
+        suffix = doc[start + mask_len:]
+        masked_string = (
+            prefix + self.MASK_CHAR +         
+            suffix + self.MASK_CHAR +           
+            masked_content                     
+        )
+        total_needed = self.block_size + 1
+        if len(masked_string) < total_needed:
+            masked_string += self.PAD_CHAR * (total_needed - len(masked_string))
+        else:                                 
+            masked_string = masked_string[:total_needed]
+        x_str = masked_string[:-1]
+        y_str = masked_string[1:]
+        x = torch.tensor([self.stoi[c] for c in x_str], dtype=torch.long)
+        y = torch.tensor([self.stoi[c] for c in y_str], dtype=torch.long)
+        return x, y
         ### END YOUR CODE ###
+
 
 
 # The input-output pairs (x, y) of the NameDataset are of the following form:
