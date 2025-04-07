@@ -11,10 +11,10 @@ def main():
 
     # Compute accuracy in the range [0.0, 100.0]
     ### YOUR CODE HERE ###
-    with open("dev.tsv" , encoding="utf-8") as f:
+    with open("birth_dev.tsv" , encoding="utf-8") as f:
         n = sum(1 for _ in f)
     preds = ["London"] * n
-    total, correct = utils.evaluate_places("dev.tsv" , preds)
+    total, correct = utils.evaluate_places("birth_dev.tsv" , preds)
     accuracy = 0.0 if total == 0 else correct / total * 100.0 
     ### END YOUR CODE ###
 
